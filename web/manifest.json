@@ -1,11 +1,11 @@
 {
-    "name": "elderly_care_app",
-    "short_name": "elderly_care_app",
+    "name": "MedAlert+",
+    "short_name": "MedAlert+",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F6FBFB",
+    "theme_color": "#8AC6D0",
+    "description": "MedAlert — medication reminders with calm, pastel UI.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

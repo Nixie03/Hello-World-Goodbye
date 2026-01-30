@@ -1,4 +1,4 @@
-name: elderly_care_app
+name: med_alert
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -34,6 +34,18 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  google_fonts: ^5.0.0
+  flutter_local_notifications: ^13.0.0
+  shared_preferences: ^2.0.0
+  timezone: ^0.9.0
+  uuid: ^4.0.0
+  audioplayers: ^6.5.1
+  flutter_ringtone_player: ^4.0.0+4
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  flutter_svg: ^2.2.3
+  crypto: ^3.0.3
+  connectivity_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -87,3 +99,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # Ringtone assets (put your ringtone files under assets/ringtones/)
+  assets:
+    - assets/ringtones/
+    - assets/logo/medalert_logo.svg

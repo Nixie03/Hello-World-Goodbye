@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Soft pastel background circle -->
+  <rect rx="40" ry="40" width="256" height="256" fill="#F6FBFB"/>
+
+  <!-- Capsule: left mint, right soft coral -->
+  <g transform="translate(40,58)">
+    <rect x="0" y="0" width="176" height="80" rx="40" fill="#C7EEF1" />
+    <rect x="88" y="0" width="88" height="80" rx="40" fill="#FFD6D6" />
+    <!-- center dividing line -->
+    <line x1="88" y1="0" x2="88" y2="80" stroke="#FFFFFF" stroke-width="2" opacity="0.5" />
+
+    <!-- Clock overlay on right side -->
+    <g transform="translate(120,18)">
+      <circle cx="0" cy="0" r="20" fill="#FFFFFF" opacity="0.95" />
+      <circle cx="0" cy="0" r="18" fill="#FFD6D6" />
+      <!-- minute hand -->
+      <rect x="-2" y="-12" width="4" height="12" rx="2" fill="#333"/>
+      <!-- hour hand -->
+      <rect x="0" y="-6" width="10" height="4" rx="2" fill="#333" transform="rotate(45)"/>
+    </g>
+  </g>
+
+  <!-- Text: MedAlert (rounded sans feel) -->
+  <text x="50%" y="220" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="28" fill="#2D3A3A" text-anchor="middle">MedAlert</text>
+</svg>
