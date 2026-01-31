@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _selectedRole = 'client';
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _isOnline = false;
@@ -51,14 +52,40 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
+      final storedRole = await AuthService.instance.getUserRole();
+      final expectedRole = _selectedRole == 'patient'
+          ? 'client'
+          : _selectedRole;
+      if (storedRole != expectedRole) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'This account is registered as ${storedRole == 'doctor' ? 'Doctor' : 'Client/Patient'}.',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+        return;
+      }
       Navigator.of(context).pushReplacementNamed('/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['message'] ?? 'Login failed', style: GoogleFonts.plusJakartaSans()),
+          content: Text(
+            result['message'] ?? 'Login failed',
+            style: GoogleFonts.plusJakartaSans(),
+          ),
           backgroundColor: const Color(0xFFEF4444),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
@@ -122,6 +149,58 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 48),
 
+                    // Role selection
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedRole,
+                      decoration: InputDecoration(
+                        labelText: 'Login as',
+                        prefixIcon: const Icon(
+                          Icons.badge_rounded,
+                          color: Color(0xFF6366F1),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6366F1),
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'client',
+                          child: Text('Client'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'patient',
+                          child: Text('Patient'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'doctor',
+                          child: Text('Doctor'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _selectedRole = value);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
                     // Email field
                     TextFormField(
                       controller: _emailController,
@@ -129,18 +208,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Email',
                         hintText: 'your.email@example.com',
-                        prefixIcon: const Icon(Icons.email_rounded, color: Color(0xFF6366F1)),
+                        prefixIcon: const Icon(
+                          Icons.email_rounded,
+                          color: Color(0xFF6366F1),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6366F1),
+                            width: 2,
+                          ),
                         ),
                         filled: true,
                         fillColor: Colors.white,
@@ -164,25 +253,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         hintText: 'Enter your password',
-                        prefixIcon: const Icon(Icons.lock_rounded, color: Color(0xFF6366F1)),
+                        prefixIcon: const Icon(
+                          Icons.lock_rounded,
+                          color: Color(0xFF6366F1),
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                            _obscurePassword
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
                             color: const Color(0xFF94A3B8),
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6366F1),
+                            width: 2,
+                          ),
                         ),
                         filled: true,
                         fillColor: Colors.white,
@@ -215,7 +318,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : Text(
@@ -239,16 +344,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFFEF3C7),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: const Color(0xFFF59E0B)),
+                              border: Border.all(
+                                color: const Color(0xFFF59E0B),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.wifi_off_rounded, color: Color(0xFFF59E0B), size: 20),
+                                const Icon(
+                                  Icons.wifi_off_rounded,
+                                  color: Color(0xFFF59E0B),
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'You\'re offline. Use guest mode to continue.',
-                                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF92400E)),
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      color: const Color(0xFF92400E),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -260,7 +374,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: OutlinedButton(
                               onPressed: _isLoading ? null : _handleGuestLogin,
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Color(0xFF6366F1), width: 2),
+                                side: const BorderSide(
+                                  color: Color(0xFF6366F1),
+                                  width: 2,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -291,7 +408,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 8,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _isOnline ? const Color(0xFF10B981) : const Color(0xFF6B7280),
+                              color: _isOnline
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF6B7280),
                             ),
                           ),
                           const SizedBox(width: 6),
@@ -299,7 +418,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             _isOnline ? 'Connected' : 'Offline',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color: _isOnline ? const Color(0xFF10B981) : const Color(0xFF6B7280),
+                              color: _isOnline
+                                  ? const Color(0xFF10B981)
+                                  : const Color(0xFF6B7280),
                             ),
                           ),
                         ],
@@ -321,7 +442,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
                             );
                           },
                           child: Text(

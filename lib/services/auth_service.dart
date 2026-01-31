@@ -11,6 +11,8 @@ class AuthService {
   static const String _keyUserName = 'auth_user_name';
   static const String _keyPassword = 'auth_password_hash';
   static const String _keyCreatedAt = 'auth_created_at';
+  static const String _keyUserRole = 'auth_user_role';
+  static const String _keyDoctorLicense = 'auth_doctor_license';
 
   // Check if user is logged in
   Future<bool> isLoggedIn() async {
@@ -42,6 +44,8 @@ class AuthService {
     required String email,
     required String password,
     required String name,
+    required String role,
+    String? doctorLicense,
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -56,15 +60,28 @@ class AuthService {
 
     // Validate inputs
     if (email.isEmpty || !email.contains('@')) {
-      return {'success': false, 'message': 'Please enter a valid email address'};
+      return {
+        'success': false,
+        'message': 'Please enter a valid email address',
+      };
     }
 
     if (password.length < 6) {
-      return {'success': false, 'message': 'Password must be at least 6 characters'};
+      return {
+        'success': false,
+        'message': 'Password must be at least 6 characters',
+      };
     }
 
     if (name.isEmpty) {
       return {'success': false, 'message': 'Please enter your name'};
+    }
+
+    if (role == 'doctor' && (doctorLicense == null || doctorLicense.isEmpty)) {
+      return {
+        'success': false,
+        'message': 'Please enter your doctor license number',
+      };
     }
 
     // Store user data
@@ -73,12 +90,13 @@ class AuthService {
     await prefs.setString(_keyUserName, name);
     await prefs.setString(_keyPassword, passwordHash);
     await prefs.setString(_keyCreatedAt, DateTime.now().toIso8601String());
+    await prefs.setString(_keyUserRole, role);
+    if (role == 'doctor') {
+      await prefs.setString(_keyDoctorLicense, doctorLicense ?? '');
+    }
     await prefs.setBool(_keyLoggedIn, true);
 
-    return {
-      'success': true,
-      'message': 'Account created successfully!',
-    };
+    return {'success': true, 'message': 'Account created successfully!'};
   }
 
   // Login user
@@ -112,10 +130,7 @@ class AuthService {
     // Mark as logged in
     await prefs.setBool(_keyLoggedIn, true);
 
-    return {
-      'success': true,
-      'message': 'Login successful!',
-    };
+    return {'success': true, 'message': 'Login successful!'};
   }
 
   // Logout user
@@ -131,7 +146,14 @@ class AuthService {
       'email': prefs.getString(_keyUserEmail),
       'name': prefs.getString(_keyUserName),
       'createdAt': prefs.getString(_keyCreatedAt),
+      'role': prefs.getString(_keyUserRole) ?? 'client',
+      'license': prefs.getString(_keyDoctorLicense),
     };
+  }
+
+  Future<String> getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyUserRole) ?? 'client';
   }
 
   // Check if account exists
